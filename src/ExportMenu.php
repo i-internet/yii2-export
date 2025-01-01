@@ -2167,21 +2167,42 @@ class ExportMenu extends GridView
      * @return Cell
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    protected function setOutCellValue($sheet, $index, $value, $format = null)
-    {
-        $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-        if ($this->stripHtml) {
-            $value = strip_tags($value);
-        }
-        $cell = $sheet->getCell($index);
-        if ($format === null) {
-            $cell->setValue($value);
-        } else {
-            $cell->setValueExplicit($value, $format);
-        }
-
-        return $cell;
+    /**
+ * Safely decode HTML entities
+ * @param mixed $value
+ * @return string
+ */
+protected function safeHtmlDecode($value): string 
+{
+    if ($value === null) {
+        return '';
     }
+    return html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Set cell value in the output sheet
+ * @param mixed $sheet 
+ * @param string $index
+ * @param mixed $value
+ * @param mixed $format
+ * @return mixed
+ */
+protected function setOutCellValue($sheet, $index, $value, $format = null)
+{
+    $value = $this->safeHtmlDecode($value);
+    if ($this->stripHtml) {
+        $value = strip_tags($value);
+    }
+    $cell = $sheet->getCell($index);
+    if ($format === null) {
+        $cell->setValue($value);
+    } else {
+        $cell->setValueExplicit($value, $format);
+    }
+
+    return $cell;
+}
 
     /**
      * Cleans up the export file and current object instance
