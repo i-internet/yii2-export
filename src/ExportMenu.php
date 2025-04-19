@@ -40,7 +40,7 @@ use yii\grid\Column;
 use yii\grid\DataColumn;
 use yii\grid\SerialColumn;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
+use app\base\yii2\helpers\Html;
 use yii\helpers\Inflector;
 use yii\helpers\Json;
 use yii\helpers\Url;
