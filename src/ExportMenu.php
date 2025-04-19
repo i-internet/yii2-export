@@ -1749,77 +1749,88 @@ class ExportMenu extends GridView
         }
     }
 
-   /**
-* Initialize column selector list
-*/
+ /**
+ * Initialize column selector list
+ */
 protected function initColumnSelector()
 {
-   if (!$this->_columnSelectorEnabled) {
-       return;
-   }
-   
-   $selector = [];
-   
-   // Fix for PHP 8.3 compatibility - handle potentially false values
-   $btnCss = $this->getDefaultBtnCss();
-   $cssClasses = ['btn'];
-   if ($btnCss !== false && $btnCss !== null) {
-       $cssClasses[] = (string)$btnCss;
-   }
-   $cssClasses[] = 'dropdown-toggle';
-   
-   Html::addCssClass($this->columnSelectorOptions, $cssClasses);
-   
-   $header = ArrayHelper::getValue($this->columnSelectorOptions, 'header', Yii::t('kvexport', 'Select Columns'));
-   if (version_compare(PHP_VERSION, '8.1', '>')) {
-       // PHP 8.1+ version - Prevent automatic conversion from false to array
-       $this->columnSelectorOptions['header'] = (!isset($header) || $header === false) 
-           ? '' 
-           : '<li class="dropdown-header">'.htmlspecialchars((string)$header).'</li><li class="kv-divider"></li>';
-   } else {
-       // PHP 7.x version - Original code
-       $this->columnSelectorOptions['header'] = (!isset($header) || $header === false) 
-           ? '' 
-           : '<li class="dropdown-header">'.$header.'</li><li class="kv-divider"></li>';
-   }
+    if (!$this->_columnSelectorEnabled) {
+        return;
+    }
+    
+    $selector = [];
+    
+    // Ensure columnSelectorOptions is an array
+    if ($this->columnSelectorOptions === false || $this->columnSelectorOptions === null) {
+        $this->columnSelectorOptions = [];
+    }
+    
+    // Fix for PHP 8.3 compatibility - handle potentially false values
+    $btnCss = $this->getDefaultBtnCss();
+    $cssClasses = ['btn'];
+    if ($btnCss !== false && $btnCss !== null) {
+        $cssClasses[] = (string)$btnCss;
+    }
+    $cssClasses[] = 'dropdown-toggle';
+    
+    Html::addCssClass($this->columnSelectorOptions, $cssClasses);
+    
+    $header = ArrayHelper::getValue($this->columnSelectorOptions, 'header', Yii::t('kvexport', 'Select Columns'));
+    if (version_compare(PHP_VERSION, '8.1', '>')) {
+        // PHP 8.1+ version - Prevent automatic conversion from false to array
+        $this->columnSelectorOptions['header'] = (!isset($header) || $header === false) 
+            ? '' 
+            : '<li class="dropdown-header">'.htmlspecialchars((string)$header).'</li><li class="kv-divider"></li>';
+    } else {
+        // PHP 7.x version - Original code
+        $this->columnSelectorOptions['header'] = (!isset($header) || $header === false) 
+            ? '' 
+            : '<li class="dropdown-header">'.$header.'</li><li class="kv-divider"></li>';
+    }
           
-   $id = $this->options['id'].'-cols';
-   Html::addCssClass($this->columnSelectorMenuOptions, 'dropdown-menu kv-checkbox-list');
-   
-   $this->columnSelectorMenuOptions = array_replace_recursive(
-       [
-           'id' => $id.'-list',
-           'role' => 'menu',
-           'aria-labelledby' => $id,
-       ],
-       $this->columnSelectorMenuOptions
-   );
-   
-   $dataToggle = 'data-'.($this->isBs(5) ? 'bs-' : '').'toggle';
-   
-   $this->columnSelectorOptions = array_replace_recursive(
-       [
-           'id' => $id,
-           'icon' => !$this->isBs(3) ? '<i class="fas fa-list"></i>' : '<i class="glyphicon glyphicon-list"></i>',
-           'title' => Yii::t('kvexport', 'Select columns to export'),
-           'type' => 'button',
-           $dataToggle => 'dropdown',
-           'aria-haspopup' => 'true',
-           'aria-expanded' => 'false',
-       ],
-       $this->columnSelectorOptions
-   );
-   
-   foreach ($this->columns as $key => $column) {
-       $selector[$key] = $this->getColumnLabel($key, $column);
-   }
-   
-   $this->columnSelector = array_replace($selector, $this->columnSelector);
-   
-   if (!isset($this->selectedColumns)) {
-       $keys = array_keys($this->columnSelector);
-       $this->selectedColumns = array_combine($keys, $keys);
-   }
+    $id = $this->options['id'].'-cols';
+    
+    // Ensure columnSelectorMenuOptions is an array
+    if ($this->columnSelectorMenuOptions === false || $this->columnSelectorMenuOptions === null) {
+        $this->columnSelectorMenuOptions = [];
+    }
+    
+    Html::addCssClass($this->columnSelectorMenuOptions, 'dropdown-menu kv-checkbox-list');
+    
+    $this->columnSelectorMenuOptions = array_replace_recursive(
+        [
+            'id' => $id.'-list',
+            'role' => 'menu',
+            'aria-labelledby' => $id,
+        ],
+        $this->columnSelectorMenuOptions
+    );
+    
+    $dataToggle = 'data-'.($this->isBs(5) ? 'bs-' : '').'toggle';
+    
+    $this->columnSelectorOptions = array_replace_recursive(
+        [
+            'id' => $id,
+            'icon' => !$this->isBs(3) ? '<i class="fas fa-list"></i>' : '<i class="glyphicon glyphicon-list"></i>',
+            'title' => Yii::t('kvexport', 'Select columns to export'),
+            'type' => 'button',
+            $dataToggle => 'dropdown',
+            'aria-haspopup' => 'true',
+            'aria-expanded' => 'false',
+        ],
+        $this->columnSelectorOptions
+    );
+    
+    foreach ($this->columns as $key => $column) {
+        $selector[$key] = $this->getColumnLabel($key, $column);
+    }
+    
+    $this->columnSelector = array_replace($selector, $this->columnSelector);
+    
+    if (!isset($this->selectedColumns)) {
+        $keys = array_keys($this->columnSelector);
+        $this->selectedColumns = array_combine($keys, $keys);
+    }
 }
 
     /**
